@@ -139,6 +139,11 @@ namespace Api_Factura.Models
             OnModelCreatingPartial(modelBuilder);
         }
 
+        internal object EntryAsync(Producto objProducto)
+        {
+            throw new NotImplementedException();
+        }
+
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
