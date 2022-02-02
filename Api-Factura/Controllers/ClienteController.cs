@@ -50,13 +50,15 @@ namespace Api_Factura.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetProductos()
+        public async Task<IActionResult> GetClientes()
         {
 
             using (var db = new Models.BD_facturaContext())
             {
                 var listaClientes = await db.Clientes.OrderBy(c => c.Nombre).ToListAsync();
-                return Ok(listaClientes);
+                string jsonstring= System.Text.Json.JsonSerializer.Serialize(listaClientes);
+                return Ok(jsonstring);
+                
 
             }
         }
@@ -66,11 +68,26 @@ namespace Api_Factura.Controllers
         public async Task<IActionResult> Getcliente(string Id)
         {
 
+
             using (var db = new Models.BD_facturaContext())
             {
-                var objcliente = await db.Clientes.FirstOrDefaultAsync(c => c.Identificacion==Id);
-                return Ok(JsonConvert.SerializeObject(objcliente));
-
+                if (Id == null)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    else
+                    {
+                        var objcliente = await db.Clientes.FirstOrDefaultAsync(c => c.Identificacion == Id);
+                        string jsonCliente = System.Text.Json.JsonSerializer.Serialize(objcliente);
+                        return Ok(jsonCliente);
+                    }
+                }
             }
         }
     }

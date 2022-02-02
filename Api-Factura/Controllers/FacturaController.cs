@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -85,7 +86,8 @@ namespace Api_Factura.Controllers
             using (var db = new Models.BD_facturaContext())
             {
                 var listaFacturas = await db.Facturas.OrderBy(c => c.NumeroFactura).ToListAsync();
-                return Ok(JsonConvert.SerializeObject(listaFacturas));
+                string jsonListaFacturas = System.Text.Json.JsonSerializer.Serialize(listaFacturas);
+                return Ok(jsonListaFacturas);
 
             }
         }
@@ -99,6 +101,33 @@ namespace Api_Factura.Controllers
                 
             }
               
+        }
+
+        [HttpGet("{codigo}")]
+        public async Task<IActionResult> GetPFactura(string codigo)
+        {
+
+            using (var db = new Models.BD_facturaContext())
+            {
+                if(codigo== null)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    if(!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    else
+                    {
+                        var objFactura = await db.Facturas.FirstOrDefaultAsync(c => c.NumeroFactura == codigo);
+
+                        string jsonFactura = System.Text.Json.JsonSerializer.Serialize(objFactura);
+                        return Ok(jsonFactura);
+                    }
+                }               
+            }
         }
 
     }

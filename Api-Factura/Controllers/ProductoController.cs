@@ -24,19 +24,22 @@ namespace Api_Factura.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                if (!ModelState.IsValid)
+                else
                 {
-                    return BadRequest(ModelState);
-                }
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    else
+                    {
+                        await db.AddAsync(producto);
+                        await db.SaveChangesAsync();
 
-                await db.AddAsync(producto);
-                await db.SaveChangesAsync();
-
-                return Ok(JsonConvert.SerializeObject(producto));
+                        return Ok(JsonConvert.SerializeObject(producto));
+                    }
+                }            
 
             }
-
-
         }
 
         
@@ -58,9 +61,24 @@ namespace Api_Factura.Controllers
 
             using (var db = new Models.BD_facturaContext())
             {
-                var objproducto= await db.Productos.FirstOrDefaultAsync(c => c.Codigo == codigo);
-                return Ok(JsonConvert.SerializeObject(objproducto));
-
+                if (codigo == null)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    if (!ModelState.IsValid)
+                    {
+                        return BadRequest(ModelState);
+                    }
+                    else
+                    {
+                        var objproducto = await db.Productos.FirstOrDefaultAsync(c => c.Codigo == codigo);
+                        string jsonProducto = System.Text.Json.JsonSerializer.Serialize(objproducto);
+                        return Ok(jsonProducto);
+                    }
+                }
+               
             }
         }
     }
